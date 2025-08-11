@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Create Deck</title>
+</head>
+<body>
+    <h2>Create a New Deck</h2>
+    <form method="post">
+        <label>Name:</label><br>
+        <input type="text" name="name" required><br>
+        <label>Description:</label><br>
+        <input type="text" name="description" required><br><br>
+        <input type="submit" value="Create Deck">
+    </form>
+    <a href="{{ url_for('flashcards.show_decks') }}">Back to Decks</a>
+    {% include 'nav.html' %}
+</body>
+</html>

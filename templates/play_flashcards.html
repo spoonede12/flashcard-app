@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Play Flashcards</title>
+    <script>
+        let flashcards = {{ flashcards|tojson }};
+        let current = 0;
+        let revealed = false;
+
+        function showCard() {
+            if (flashcards.length === 0) {
+                document.getElementById('card').innerHTML = "No flashcards available.";
+                document.getElementById('controls').style.display = "none";
+                return;
+            }
+            revealed = false;
+            document.getElementById('card').innerHTML = 
+                "<strong>A:</strong> " + (
+                    flashcards[current].answer.startsWith("/static/uploads") || flashcards[current].answer.startsWith("http")
+                    ? `<img src='${flashcards[current].answer}' width='150'>`
+                    : flashcards[current].answer
+                );
+            document.getElementById('revealBtn').style.display = "inline";
+            document.getElementById('nextBtn').style.display = "none";
+        }
+
+        function reveal() {
+            revealed = true;
+            document.getElementById('card').innerHTML += "<br><strong>Q:</strong> " + flashcards[current].question;
+            document.getElementById('revealBtn').style.display = "none";
+            document.getElementById('nextBtn').style.display = "inline";
+        }
+
+        function next() {
+            current = (current + 1) % flashcards.length;
+            showCard();
+        }
+
+        window.onload = showCard;
+    </script>
+</head>
+<body>
+    <h2>Play Flashcards</h2>
+    <div id="card"></div>
+    <div id="controls">
+        <button id="revealBtn" onclick="reveal()">Reveal</button>
+        <button id="nextBtn" onclick="next()" style="display:none;">Next</button>
+    </div>
+    <a href="{{ url_for('flashcards.show_flashcards') }}">Back to Flashcards</a>
+    {% include 'nav.html' %}
+</body>
+</html>

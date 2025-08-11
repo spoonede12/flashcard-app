@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Decks</title>
+</head>
+<body>
+    <h2>Flashcard Decks</h2>
+    <ul>
+        {% for deck in decks %}
+            <li>
+                <strong>{{ deck.name }}</strong>: {{ deck.description }}
+            </li>
+        {% endfor %}
+    </ul>
+    <a href="{{ url_for('flashcards.create_deck') }}">Create New Deck</a>
+    {% include 'nav.html' %}
+</body>
+</html>

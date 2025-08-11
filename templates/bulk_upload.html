@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Bulk Upload Flashcards</title>
+</head>
+<body>
+    <h2>Bulk Upload Flashcards (Images)</h2>
+        <form method="post" enctype="multipart/form-data">
+            <label>Select Deck:</label>
+            <select name="deck" required>
+                {% for deck in decks %}
+                    <option value="{{ loop.index0 }}">{{ deck.name }}</option>
+                {% endfor %}
+            </select><br><br>
+            <label>Select image files:</label><br>
+            <input type="file" name="images" multiple accept="image/*"><br><br>
+            <input type="submit" value="Upload">
+        </form>
+        {% include 'nav.html' %}
+</body>
+</html>

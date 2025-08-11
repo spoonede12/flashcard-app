@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Flashcards</title>
+</head>
+<body>
+    <h2>Flashcards</h2>
+    <ul>
+        {% for card in flashcards %}
+            <li>
+                <strong>Q:</strong> {{ card.question }} <br>
+                <strong>A:</strong>
+                {% if card.answer.startswith('/static/uploads') or card.answer.startswith('http') %}
+                    <img src="{{ card.answer }}" alt="{{ card.question }}" width="150">
+                {% else %}
+                    {{ card.answer }}
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+    <a href="{{ url_for('flashcards.create_flashcard') }}">Create Another Flashcard</a> |
+    <a href="{{ url_for('flashcards.bulk_upload_flashcards') }}">Bulk Upload Flashcards</a>
+    {% include 'nav.html' %}
+</body>
+</html>
+</html>

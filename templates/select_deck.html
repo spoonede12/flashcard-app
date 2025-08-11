@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Select Deck</title>
+</head>
+<body>
+    <h2>Select a Deck to Play</h2>
+    <form method="post">
+        <select name="deck" required>
+            {% for deck in decks %}
+                <option value="{{ loop.index0 }}">{{ deck.name }}</option>
+            {% endfor %}
+        </select>
+        <input type="submit" value="Play">
+    </form>
+    {% include 'nav.html' %}
+</body>
+</html>
