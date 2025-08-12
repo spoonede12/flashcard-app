@@ -1,18 +1,61 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Decks</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Decks - Flashcard App</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-    <h2>Flashcard Decks</h2>
-    <ul>
-        {% for deck in decks %}
-            <li>
-                <strong>{{ deck.name }}</strong>: {{ deck.description }}
-            </li>
-        {% endfor %}
-    </ul>
-    <a href="{{ url_for('flashcards.create_deck') }}">Create New Deck</a>
-    {% include 'nav.html' %}
+    <div class="header">
+        <div class="container">
+            <h1>🎯 Your Study Decks</h1>
+            <nav class="nav">
+                <a href="{{ url_for('flashcards.index') }}" class="nav-link">🏠 Home</a>
+                <a href="{{ url_for('flashcards.show_flashcards') }}" class="nav-link">📚 View All Cards</a>
+                <a href="{{ url_for('flashcards.create_deck') }}" class="nav-link">➕ Create Deck</a>
+                <a href="{{ url_for('flashcards.create_flashcard') }}" class="nav-link">✏️ Add Flashcard</a>
+                <a href="{{ url_for('flashcards.play_flashcards') }}" class="nav-link">🎮 Study Session</a>
+            </nav>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="content fade-in">
+            {% if decks %}
+                <div class="text-center mb-2">
+                    <h2>📚 Your Learning Collections</h2>
+                    <p>Organize your study materials into focused decks for better learning outcomes.</p>
+                </div>
+
+                <div class="deck-grid">
+                    {% for deck in decks %}
+                        <div class="deck-card">
+                            <h3>{{ deck.name }}</h3>
+                            <p>{{ deck.description }}</p>
+                            <div style="border-top: 1px solid #e0e6ed; padding-top: 1rem; margin-top: 1rem;">
+                                <span style="color: #667eea; font-weight: 500;">
+                                    📊 {{ deck.flashcards|length }} flashcard{{ 's' if deck.flashcards|length != 1 else '' }}
+                                </span>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <div class="text-center mt-2">
+                    <a href="{{ url_for('flashcards.create_deck') }}" class="btn btn-success">➕ Create New Deck</a>
+                    <a href="{{ url_for('flashcards.play_flashcards') }}" class="btn">🎮 Start Studying</a>
+                </div>
+            {% else %}
+                <div class="text-center">
+                    <h2>🎯 No Decks Yet!</h2>
+                    <p>Decks help you organize your flashcards by subject, topic, or difficulty level. Create your first deck to get started!</p>
+                    <div class="mt-2">
+                        <a href="{{ url_for('flashcards.create_deck') }}" class="btn btn-success">🚀 Create Your First Deck</a>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
 </body>
 </html>

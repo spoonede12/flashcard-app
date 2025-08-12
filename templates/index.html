@@ -1,15 +1,54 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Flashcard App</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flashcard App - Learn Smarter</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-    <h1>Welcome to the Flashcard App!</h1>
-    <a href="{{ url_for('flashcards.show_flashcards') }}">View Flashcards</a> |
-    <a href="{{ url_for('flashcards.create_flashcard') }}">Create Flashcard</a> |
-    <a href="{{ url_for('flashcards.bulk_upload_flashcards') }}">Bulk Upload Flashcards</a> |
-    <a href="{{ url_for('flashcards.show_decks') }}">View Decks</a> |
-    <a href="{{ url_for('flashcards.create_deck') }}">Create Deck</a> |
-    <a href="{{ url_for('flashcards.play_flashcards') }}">Play Flashcards</a>
+    <div class="header">
+        <div class="container">
+            <h1>🎓 Flashcard Learning Hub</h1>
+            <nav class="nav">
+                <a href="{{ url_for('flashcards.show_flashcards') }}" class="nav-link">📚 View Flashcards</a>
+                <a href="{{ url_for('flashcards.create_flashcard') }}" class="nav-link">✏️ Create Flashcard</a>
+                <a href="{{ url_for('flashcards.bulk_upload_flashcards') }}" class="nav-link">📤 Bulk Upload</a>
+                <a href="{{ url_for('flashcards.show_decks') }}" class="nav-link">🎯 View Decks</a>
+                <a href="{{ url_for('flashcards.create_deck') }}" class="nav-link">➕ Create Deck</a>
+                <a href="{{ url_for('flashcards.play_flashcards') }}" class="nav-link">🎮 Study Session</a>
+                <a href="{{ url_for('flashcards.logout') }}" class="nav-link">🚪 Logout</a>
+            </nav>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="content fade-in">
+            <div class="text-center">
+                <h2>Welcome to Your Personal Learning Space! 🌟</h2>
+                <p>Organize your knowledge, create custom flashcards, and master any subject with our intuitive study tools.</p>
+                
+                <div style="margin-top: 2rem;">
+                    <a href="{{ url_for('flashcards.create_deck') }}" class="btn btn-success">🚀 Get Started - Create Your First Deck</a>
+                    <a href="{{ url_for('flashcards.show_decks') }}" class="btn">📖 Browse Existing Decks</a>
+                </div>
+            </div>
+
+            <div class="deck-grid mt-2">
+                <div class="card">
+                    <h3>📝 Create & Organize</h3>
+                    <p>Build custom flashcard decks organized by subject, difficulty, or any system that works for you.</p>
+                </div>
+                <div class="card">
+                    <h3>🎯 Smart Study Sessions</h3>
+                    <p>Practice with interactive flashcards designed to improve retention and accelerate learning.</p>
+                </div>
+                <div class="card">
+                    <h3>📤 Bulk Import</h3>
+                    <p>Upload multiple flashcards at once or import images to create visual learning materials.</p>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

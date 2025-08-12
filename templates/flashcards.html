@@ -1,26 +1,57 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Flashcards</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Flashcards - Flashcard App</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-    <h2>Flashcards</h2>
-    <ul>
-        {% for card in flashcards %}
-            <li>
-                <strong>Q:</strong> {{ card.question }} <br>
-                <strong>A:</strong>
-                {% if card.answer.startswith('/static/uploads') or card.answer.startswith('http') %}
-                    <img src="{{ card.answer }}" alt="{{ card.question }}" width="150">
-                {% else %}
-                    {{ card.answer }}
-                {% endif %}
-            </li>
-        {% endfor %}
-    </ul>
-    <a href="{{ url_for('flashcards.create_flashcard') }}">Create Another Flashcard</a> |
-    <a href="{{ url_for('flashcards.bulk_upload_flashcards') }}">Bulk Upload Flashcards</a>
-    {% include 'nav.html' %}
+    <div class="header">
+        <div class="container">
+            <h1>📚 Your Flashcards</h1>
+            <nav class="nav">
+                <a href="{{ url_for('flashcards.index') }}" class="nav-link">🏠 Home</a>
+                <a href="{{ url_for('flashcards.create_flashcard') }}" class="nav-link">✏️ Create Flashcard</a>
+                <a href="{{ url_for('flashcards.bulk_upload_flashcards') }}" class="nav-link">📤 Bulk Upload</a>
+                <a href="{{ url_for('flashcards.show_decks') }}" class="nav-link">🎯 View Decks</a>
+                <a href="{{ url_for('flashcards.play_flashcards') }}" class="nav-link">🎮 Study Session</a>
+            </nav>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="content fade-in">
+            {% if flashcards %}
+                <div class="flashcard-container">
+                    {% for card in flashcards %}
+                        <div class="flashcard">
+                            <h3>❓ Question</h3>
+                            <p>{{ card.question }}</p>
+                            
+                            <h3>💡 Answer</h3>
+                            {% if card.answer.startswith('/static/uploads') or card.answer.startswith('http') %}
+                                <div class="text-center">
+                                    <img src="{{ card.answer }}" alt="{{ card.question }}" 
+                                         style="max-width: 100%; height: auto; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                                </div>
+                            {% else %}
+                                <p>{{ card.answer }}</p>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="text-center">
+                    <h2>📝 No Flashcards Yet!</h2>
+                    <p>Ready to start learning? Create your first flashcard or upload multiple cards at once.</p>
+                    <div class="mt-2">
+                        <a href="{{ url_for('flashcards.create_flashcard') }}" class="btn btn-success">✏️ Create Your First Flashcard</a>
+                        <a href="{{ url_for('flashcards.bulk_upload_flashcards') }}" class="btn">📤 Bulk Upload</a>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
 </body>
-</html>
 </html>
