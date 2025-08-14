@@ -1,4 +1,5 @@
 import os
+import json
 from flask import render_template, request, redirect, url_for, session, current_app
 from werkzeug.utils import secure_filename
 from . import flashcards_bp
@@ -6,8 +7,37 @@ from . import flashcards_bp
 USERNAME = "dave"
 PASSWORD = "india"
 
-flashcards = [] # flashcard creation
-decks = []  # Each deck: {'name': ..., 'description': ..., 'flashcards': [...]}
+# Data file path
+DATA_FILE = 'flashcard_data.json'
+
+# Data storage functions
+def load_data():
+    """Load data from JSON file"""
+    try:
+        if os.path.exists(DATA_FILE):
+            with open(DATA_FILE, 'r') as f:
+                data = json.load(f)
+                return data.get('flashcards', []), data.get('decks', [])
+        else:
+            return [], []
+    except (json.JSONDecodeError, FileNotFoundError):
+        print("Warning: Could not load data file, starting with empty data")
+        return [], []
+
+def save_data():
+    """Save data to JSON file"""
+    try:
+        data = {
+            'flashcards': flashcards,
+            'decks': decks
+        }
+        with open(DATA_FILE, 'w') as f:
+            json.dump(data, f, indent=2)
+    except Exception as e:
+        print(f"Error saving data: {e}")
+
+# Load data on startup
+flashcards, decks = load_data()
 
 # Login routes
 
@@ -58,6 +88,7 @@ def create_flashcard():
         answer = request.form['answer']
         deck_index = int(request.form['deck'])
         decks[deck_index]['flashcards'].append({'question': question, 'answer': answer})
+        save_data()  # Save data after adding flashcard
         return redirect(url_for('flashcards.show_flashcards'))
     return render_template('create_flashcard.html', decks=decks)
 
@@ -90,6 +121,7 @@ def bulk_upload_flashcards():
                     'question': filename,
                     'answer': image_url
                 })
+        save_data()  # Save data after bulk upload
         return redirect(url_for('flashcards.show_flashcards'))
     return render_template('bulk_upload.html', decks=decks)
 
@@ -107,6 +139,7 @@ def create_deck():
         name = request.form['name']
         description = request.form['description']
         decks.append({'name': name, 'description': description, 'flashcards': []})
+        save_data()  # Save data after creating deck
         return redirect(url_for('flashcards.show_decks'))
     return render_template('create_deck.html')
 
