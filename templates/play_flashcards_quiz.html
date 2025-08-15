@@ -24,15 +24,15 @@
         }
 
         function showCard() {
-            if (flashcards.length === 0) {
+            if (remainingCards.length === 0) {
                 document.getElementById('card').innerHTML = "<div class='text-center'><h3>🎉 Deck Completed!</h3><p>You've finished this deck. Great work!</p></div>";
                 document.getElementById('controls').style.display = "none";
-                document.getElementById('stats').innerHTML = "<div class='text-center mt-3'><p>No flashcards available in this deck.</p></div>";
+                updateProgress();
                 return;
             }
             
             revealed = false;
-            const flashcard = flashcards[current];
+            const flashcard = remainingCards[current];
             const answerContent = flashcard.answer.startsWith("/static/uploads") || flashcard.answer.startsWith("http")
                 ? `<img src='${flashcard.answer}' alt='Answer' style='max-width: 100%; height: auto; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);'>`
                 : flashcard.answer;
@@ -40,7 +40,7 @@
             document.getElementById('card').innerHTML = `
                 <div class="flashcard">
                     <div class="card-header">
-                        <h3>💡 Answer ${current + 1} of ${flashcards.length}</h3>
+                        <h3>💡 Answer ${current + 1} of ${remainingCards.length}</h3>
                     </div>
                     <div class="answer-content">
                         ${answerContent}
@@ -48,15 +48,14 @@
                 </div>
             `;
             document.getElementById('revealBtn').style.display = "inline-block";
-            document.getElementById('correctBtn').style.display = "none";
-            document.getElementById('wrongBtn').style.display = "none";
-            updateStats();
+            document.getElementById('assessmentSection').style.display = "none";
+            updateProgress();
         }
 
         function reveal() {
             if (!revealed) {
                 revealed = true;
-                const flashcard = flashcards[current];
+                const flashcard = remainingCards[current];
                 
                 document.getElementById('card').innerHTML += `
                     <div class="question-section mt-2">
@@ -65,30 +64,6 @@
                         </div>
                         <div class="question-content">
                             ${flashcard.question}
-                        </div>
-                    </div>
-                `;
-                document.getElementById('revealBtn').style.display = "none";
-                document.getElementById('correctBtn').style.display = "inline-block";
-                document.getElementById('wrongBtn').style.display = "inline-block";
-            }
-        }
-
-        function reveal() {
-            if (!revealed) {
-                revealed = true;
-                const flashcard = remainingCards[current];
-                const answerContent = flashcard.answer.startsWith("/static/uploads") || flashcard.answer.startsWith("http")
-                    ? `<img src='${flashcard.answer}' alt='Answer' style='max-width: 100%; height: auto; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);'>`
-                    : flashcard.answer;
-                
-                document.getElementById('card').innerHTML += `
-                    <div class="answer-section mt-2">
-                        <div class="card-header">
-                            <h3>💡 Answer</h3>
-                        </div>
-                        <div class="answer-content">
-                            ${answerContent}
                         </div>
                     </div>
                 `;
@@ -156,7 +131,7 @@
             
             <!-- Controls -->
             <div id="controls" class="text-center">
-                <button id="revealBtn" onclick="reveal()" class="btn btn-success">👁️ Reveal Answer</button>
+                <button id="revealBtn" onclick="reveal()" class="btn btn-success">❓ Reveal Question</button>
                 
                 <div id="assessmentSection" style="display:none;" class="mt-2">
                     <div class="card" style="max-width: 500px; margin: 0 auto;">
