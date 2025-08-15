@@ -1,7 +1,10 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Play Flashcards</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Open Play - {{ deck_name }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <script>
         let flashcards = {{ flashcards|tojson }};
         let current = 0;
@@ -9,44 +12,98 @@
 
         function showCard() {
             if (flashcards.length === 0) {
-                document.getElementById('card').innerHTML = "No flashcards available.";
+                document.getElementById('card').innerHTML = "<div class='text-center'><h3>🎉 No flashcards available</h3><p>This deck doesn't have any flashcards yet.</p></div>";
                 document.getElementById('controls').style.display = "none";
                 return;
             }
             revealed = false;
-            document.getElementById('card').innerHTML = 
-                "<strong>A:</strong> " + (
-                    flashcards[current].answer.startsWith("/static/uploads") || flashcards[current].answer.startsWith("http")
-                    ? `<img src='${flashcards[current].answer}' width='150'>`
-                    : flashcards[current].answer
-                );
-            document.getElementById('revealBtn').style.display = "inline";
+            const flashcard = flashcards[current];
+            document.getElementById('card').innerHTML = `
+                <div class="flashcard">
+                    <div class="card-header">
+                        <h3>❓ Question ${current + 1} of ${flashcards.length}</h3>
+                    </div>
+                    <div class="question-content">
+                        ${flashcard.question}
+                    </div>
+                </div>
+            `;
+            document.getElementById('revealBtn').style.display = "inline-block";
             document.getElementById('nextBtn').style.display = "none";
+            document.getElementById('prevBtn').style.display = current > 0 ? "inline-block" : "none";
         }
 
         function reveal() {
-            revealed = true;
-            document.getElementById('card').innerHTML += "<br><strong>Q:</strong> " + flashcards[current].question;
-            document.getElementById('revealBtn').style.display = "none";
-            document.getElementById('nextBtn').style.display = "inline";
+            if (!revealed) {
+                revealed = true;
+                const flashcard = flashcards[current];
+                const answerContent = flashcard.answer.startsWith("/static/uploads") || flashcard.answer.startsWith("http")
+                    ? `<img src='${flashcard.answer}' alt='Answer' style='max-width: 100%; height: auto; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);'>`
+                    : flashcard.answer;
+                
+                document.getElementById('card').innerHTML += `
+                    <div class="answer-section mt-2">
+                        <div class="card-header">
+                            <h3>💡 Answer</h3>
+                        </div>
+                        <div class="answer-content">
+                            ${answerContent}
+                        </div>
+                    </div>
+                `;
+                document.getElementById('revealBtn').style.display = "none";
+                document.getElementById('nextBtn').style.display = "inline-block";
+            }
         }
 
         function next() {
-            current = (current + 1) % flashcards.length;
-            showCard();
+            if (current < flashcards.length - 1) {
+                current++;
+                showCard();
+            }
+        }
+
+        function prev() {
+            if (current > 0) {
+                current--;
+                showCard();
+            }
         }
 
         window.onload = showCard;
     </script>
 </head>
 <body>
-    <h2>Play Flashcards</h2>
-    <div id="card"></div>
-    <div id="controls">
-        <button id="revealBtn" onclick="reveal()">Reveal</button>
-        <button id="nextBtn" onclick="next()" style="display:none;">Next</button>
+    <div class="header">
+        <div class="container">
+            <h1>🔓 Open Play: {{ deck_name }}</h1>
+            <nav class="nav">
+                <a href="{{ url_for('flashcards.index') }}" class="nav-link">🏠 Home</a>
+                <a href="{{ url_for('flashcards.play_flashcards') }}" class="nav-link">🎮 Change Mode</a>
+                <a href="{{ url_for('flashcards.show_decks') }}" class="nav-link">🎯 View Decks</a>
+            </nav>
+        </div>
     </div>
-    <a href="{{ url_for('flashcards.show_flashcards') }}">Back to Flashcards</a>
-    {% include 'nav.html' %}
+
+    <div class="container">
+        <div class="content fade-in">
+            <div id="card" class="mb-2"></div>
+            
+            <div id="controls" class="text-center">
+                <button id="prevBtn" onclick="prev()" class="btn btn-secondary" style="display:none;">⬅️ Previous</button>
+                <button id="revealBtn" onclick="reveal()" class="btn btn-success">👁️ Reveal Answer</button>
+                <button id="nextBtn" onclick="next()" class="btn" style="display:none;">➡️ Next Card</button>
+            </div>
+
+            {% if flashcards|length > 0 %}
+                <div class="text-center mt-2">
+                    <div class="card" style="max-width: 400px; margin: 0 auto;">
+                        <p><strong>📊 Progress:</strong> Study at your own pace</p>
+                        <p><strong>🔄 Mode:</strong> Open Play - Review all cards freely</p>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
 </body>
 </html>

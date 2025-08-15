@@ -1,18 +1,82 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Select Deck</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Study Session - Flashcard App</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-    <h2>Select a Deck to Play</h2>
-    <form method="post">
-        <select name="deck" required>
-            {% for deck in decks %}
-                <option value="{{ loop.index0 }}">{{ deck.name }}</option>
-            {% endfor %}
-        </select>
-        <input type="submit" value="Play">
-    </form>
-    {% include 'nav.html' %}
+    <div class="header">
+        <div class="container">
+            <h1>🎮 Study Session</h1>
+            <nav class="nav">
+                <a href="{{ url_for('flashcards.index') }}" class="nav-link">🏠 Home</a>
+                <a href="{{ url_for('flashcards.show_flashcards') }}" class="nav-link">📚 View Flashcards</a>
+                <a href="{{ url_for('flashcards.show_decks') }}" class="nav-link">🎯 View Decks</a>
+                <a href="{{ url_for('flashcards.create_flashcard') }}" class="nav-link">✏️ Add Flashcard</a>
+            </nav>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="content fade-in">
+            {% if decks %}
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">📖 Choose Your Study Deck</h2>
+                        <p>Select a deck and study mode to begin your learning session.</p>
+                    </div>
+
+                    <form method="post">
+                        <div class="form-group">
+                            <label for="deck">🎯 Select Deck:</label>
+                            <select name="deck" id="deck" class="form-control" required>
+                                <option value="">Choose a deck...</option>
+                                {% for deck in decks %}
+                                    <option value="{{ loop.index0 }}">
+                                        {{ deck.name }} ({{ deck.flashcards|length }} cards)
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="mode">🎲 Study Mode:</label>
+                            <select name="mode" id="mode" class="form-control" required>
+                                <option value="">Choose study mode...</option>
+                                <option value="open">🔓 Open Play - Review all cards freely</option>
+                                <option value="quiz">🎯 Right or Wrong - Self-assessment with progress tracking</option>
+                            </select>
+                        </div>
+
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-success">🚀 Start Study Session</button>
+                            <a href="{{ url_for('flashcards.index') }}" class="btn btn-secondary">❌ Cancel</a>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="deck-grid mt-2">
+                    <div class="card">
+                        <h3>🔓 Open Play Mode</h3>
+                        <p>Review all flashcards at your own pace. Perfect for casual review and getting familiar with the material.</p>
+                    </div>
+                    <div class="card">
+                        <h3>🎯 Right or Wrong Mode</h3>
+                        <p>Test your knowledge! Cards you get right are removed from the session. Keep going until you master all cards!</p>
+                    </div>
+                </div>
+            {% else %}
+                <div class="text-center">
+                    <h2>🎯 No Decks Available</h2>
+                    <p>You need to create a deck with flashcards before starting a study session.</p>
+                    <div class="mt-2">
+                        <a href="{{ url_for('flashcards.create_deck') }}" class="btn btn-success">➕ Create Your First Deck</a>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
 </body>
 </html>

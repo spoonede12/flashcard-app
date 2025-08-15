@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Right or Wrong - {{ deck_name }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script>
+        let allFlashcards = {{ flashcards|tojson }};
+        let remainingCards = [...allFlashcards];
+        let current = 0;
+        let revealed = false;
+        let totalCards = allFlashcards.length;
+
+        function updateProgress() {
+            const completed = totalCards - remainingCards.length;
+            const percentage = totalCards > 0 ? Math.round((completed / totalCards) * 100) : 0;
+            document.getElementById('progress-text').innerHTML = `
+                <strong>📊 Progress:</strong> ${completed} of ${totalCards} cards mastered (${percentage}%)
+            `;
+            
+            // Update progress bar
+            document.getElementById('progress-fill').style.width = percentage + '%';
+        }
+
+        function showCard() {
+            if (remainingCards.length === 0) {
+                document.getElementById('card').innerHTML = `
+                    <div class="flashcard text-center">
+                        <div class="card-header">
+                            <h2>🎉 Congratulations!</h2>
+                        </div>
+                        <div class="content">
+                            <p>You've mastered all the flashcards in this deck!</p>
+                            <p><strong>Total cards studied:</strong> ${totalCards}</p>
+                            <div class="mt-2">
+                                <a href="{{ url_for('flashcards.play_flashcards') }}" class="btn btn-success">🔄 Study Another Deck</a>
+                                <a href="{{ url_for('flashcards.index') }}" class="btn">🏠 Back to Home</a>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                document.getElementById('controls').style.display = "none";
+                return;
+            }
+
+            // Shuffle remaining cards and pick the first one
+            if (current >= remainingCards.length) {
+                current = 0;
+            }
+            
+            revealed = false;
+            const flashcard = remainingCards[current];
+            document.getElementById('card').innerHTML = `
+                <div class="flashcard">
+                    <div class="card-header">
+                        <h3>❓ Question</h3>
+                        <p>Cards remaining: ${remainingCards.length}</p>
+                    </div>
+                    <div class="question-content">
+                        ${flashcard.question}
+                    </div>
+                </div>
+            `;
+            document.getElementById('revealBtn').style.display = "inline-block";
+            document.getElementById('assessmentSection').style.display = "none";
+            updateProgress();
+        }
+
+        function reveal() {
+            if (!revealed) {
+                revealed = true;
+                const flashcard = remainingCards[current];
+                const answerContent = flashcard.answer.startsWith("/static/uploads") || flashcard.answer.startsWith("http")
+                    ? `<img src='${flashcard.answer}' alt='Answer' style='max-width: 100%; height: auto; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);'>`
+                    : flashcard.answer;
+                
+                document.getElementById('card').innerHTML += `
+                    <div class="answer-section mt-2">
+                        <div class="card-header">
+                            <h3>💡 Answer</h3>
+                        </div>
+                        <div class="answer-content">
+                            ${answerContent}
+                        </div>
+                    </div>
+                `;
+                document.getElementById('revealBtn').style.display = "none";
+                document.getElementById('assessmentSection').style.display = "block";
+            }
+        }
+
+        function markCorrect() {
+            // Remove the current card from remaining cards
+            remainingCards.splice(current, 1);
+            
+            // Adjust current index if needed
+            if (current >= remainingCards.length && remainingCards.length > 0) {
+                current = 0;
+            }
+            
+            showCard();
+        }
+
+        function markIncorrect() {
+            // Move to next card (keep current card in the deck)
+            current = (current + 1) % remainingCards.length;
+            showCard();
+        }
+
+        function shuffleRemaining() {
+            for (let i = remainingCards.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [remainingCards[i], remainingCards[j]] = [remainingCards[j], remainingCards[i]];
+            }
+            current = 0;
+            showCard();
+        }
+
+        window.onload = function() {
+            shuffleRemaining();
+        };
+    </script>
+</head>
+<body>
+    <div class="header">
+        <div class="container">
+            <h1>🎯 Right or Wrong: {{ deck_name }}</h1>
+            <nav class="nav">
+                <a href="{{ url_for('flashcards.index') }}" class="nav-link">🏠 Home</a>
+                <a href="{{ url_for('flashcards.play_flashcards') }}" class="nav-link">🎮 Change Mode</a>
+                <a href="{{ url_for('flashcards.show_decks') }}" class="nav-link">🎯 View Decks</a>
+            </nav>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="content fade-in">
+            <!-- Progress Bar -->
+            <div class="card mb-2">
+                <div id="progress-text" class="mb-1"></div>
+                <div style="background-color: #e0e6ed; height: 8px; border-radius: 4px; overflow: hidden;">
+                    <div id="progress-fill" style="background: linear-gradient(45deg, #667eea, #764ba2); height: 100%; width: 0%; transition: width 0.3s ease;"></div>
+                </div>
+            </div>
+
+            <!-- Flashcard Display -->
+            <div id="card" class="mb-2"></div>
+            
+            <!-- Controls -->
+            <div id="controls" class="text-center">
+                <button id="revealBtn" onclick="reveal()" class="btn btn-success">👁️ Reveal Answer</button>
+                
+                <div id="assessmentSection" style="display:none;" class="mt-2">
+                    <div class="card" style="max-width: 500px; margin: 0 auto;">
+                        <h3>🤔 Did you get this right?</h3>
+                        <div class="mt-2">
+                            <button onclick="markCorrect()" class="btn btn-success">✅ Yes, I got it right!</button>
+                            <button onclick="markIncorrect()" class="btn btn-danger">❌ No, I need more practice</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Instructions -->
+            {% if flashcards|length > 0 %}
+                <div class="text-center mt-2">
+                    <div class="card" style="max-width: 600px; margin: 0 auto;">
+                        <h3>🎯 How This Works</h3>
+                        <p><strong>Goal:</strong> Master all cards by self-assessment</p>
+                        <p><strong>✅ Got it right?</strong> Card is removed from this session</p>
+                        <p><strong>❌ Need practice?</strong> Card stays for another round</p>
+                        <p><strong>🔄 Keep going</strong> until you've mastered all cards!</p>
+                        <button onclick="shuffleRemaining()" class="btn btn-secondary mt-1">🔀 Shuffle Remaining Cards</button>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>
