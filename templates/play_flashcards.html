@@ -18,13 +18,17 @@
             }
             revealed = false;
             const flashcard = flashcards[current];
+            const answerContent = flashcard.answer.startsWith("/static/uploads") || flashcard.answer.startsWith("http")
+                ? `<img src='${flashcard.answer}' alt='Answer' style='max-width: 100%; height: auto; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);'>`
+                : flashcard.answer;
+            
             document.getElementById('card').innerHTML = `
                 <div class="flashcard">
                     <div class="card-header">
-                        <h3>❓ Question ${current + 1} of ${flashcards.length}</h3>
+                        <h3>💡 Answer ${current + 1} of ${flashcards.length}</h3>
                     </div>
-                    <div class="question-content">
-                        ${flashcard.question}
+                    <div class="answer-content">
+                        ${answerContent}
                     </div>
                 </div>
             `;
@@ -37,17 +41,14 @@
             if (!revealed) {
                 revealed = true;
                 const flashcard = flashcards[current];
-                const answerContent = flashcard.answer.startsWith("/static/uploads") || flashcard.answer.startsWith("http")
-                    ? `<img src='${flashcard.answer}' alt='Answer' style='max-width: 100%; height: auto; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);'>`
-                    : flashcard.answer;
                 
                 document.getElementById('card').innerHTML += `
-                    <div class="answer-section mt-2">
+                    <div class="question-section mt-2">
                         <div class="card-header">
-                            <h3>💡 Answer</h3>
+                            <h3>❓ Question</h3>
                         </div>
-                        <div class="answer-content">
-                            ${answerContent}
+                        <div class="question-content">
+                            ${flashcard.question}
                         </div>
                     </div>
                 `;
