@@ -1,5 +1,6 @@
 import os
 import json
+import random
 from flask import render_template, request, redirect, url_for, session, current_app
 from werkzeug.utils import secure_filename
 from . import flashcards_bp
@@ -149,6 +150,9 @@ def play_flashcards():
     if request.method == 'POST':
         deck_index = int(request.form['deck'])
         selected_deck = decks[deck_index]
-        return render_template('play_flashcards.html', flashcards=selected_deck['flashcards'], deck_name=selected_deck['name'])
+        # Create a copy of flashcards and shuffle them for study session
+        shuffled_flashcards = selected_deck['flashcards'].copy()
+        random.shuffle(shuffled_flashcards)
+        return render_template('play_flashcards.html', flashcards=shuffled_flashcards, deck_name=selected_deck['name'])
     return render_template('select_deck.html', decks=decks)
 
